@@ -7,6 +7,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Separate DepositRequest and WithdrawRequest in case unique fields need to be added in the future
+ */
 @Data
 public class DepositRequest {
 

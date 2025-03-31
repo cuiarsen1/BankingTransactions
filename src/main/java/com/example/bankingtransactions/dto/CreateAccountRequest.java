@@ -14,5 +14,5 @@ public class CreateAccountRequest {
 
     @NotNull
     @PositiveOrZero(message = "Initial balance must be greater than or equal to zero")
-    private BigDecimal balance;
+    private BigDecimal initialBalance;
 }

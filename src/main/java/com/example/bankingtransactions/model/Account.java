@@ -1,24 +1,20 @@
 package com.example.bankingtransactions.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 public class Account {
     private UUID id;
     private String name;
     private BigDecimal balance;
     private LocalDateTime createdAt;
 
-    public Account(String name, BigDecimal balance) {
+    public Account() {
         this.id = UUID.randomUUID();
-        this.name = name;
-        this.balance = balance;
         this.createdAt = LocalDateTime.now();
     }
 

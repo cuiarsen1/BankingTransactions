@@ -7,11 +7,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Separate DepositRequest and WithdrawRequest in case unique fields need to be added in the future
+ */
 @Data
-public class TransferRequest {
-
-    @NotNull(message = "Source account ID cannot be null")
-    private UUID fromAccountId;
+public class WithdrawRequest {
 
     @NotNull(message = "Destination account ID cannot be null")
     private UUID toAccountId;
@@ -19,6 +19,4 @@ public class TransferRequest {
     @NotNull(message = "Amount cannot be null")
     @Positive(message = "Amount must be positive")
     private BigDecimal amount;
-
-    private String description;
 }
