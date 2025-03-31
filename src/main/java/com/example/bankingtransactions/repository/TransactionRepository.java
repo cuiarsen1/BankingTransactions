@@ -1,8 +1,7 @@
 package com.example.bankingtransactions.repository;
 
-import org.springframework.stereotype.Repository;
-
 import com.example.bankingtransactions.model.Transaction;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -12,7 +11,8 @@ public class TransactionRepository {
     private final Map<UUID, List<Transaction>> transactionsMap = new HashMap<>();
 
     public Transaction save(Transaction tm) {
-        transactionsMap.computeIfAbsent(tm.getId(), list -> new ArrayList<>()).add(tm);
+        transactionsMap.computeIfAbsent(tm.getToAccountId(), list -> new ArrayList<>()).add(tm);
+        transactionsMap.computeIfAbsent(tm.getFromAccountId(), list -> new ArrayList<>()).add(tm);
         return tm;
     }
 

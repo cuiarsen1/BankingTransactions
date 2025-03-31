@@ -27,6 +27,10 @@ public class AccountService {
     private final TransactionRepository transactionRepository;
 
     public AccountDto createAccount(CreateAccountRequest request) {
+        if (request.getInitialBalance().scale() > 2) {
+            throw new TransferException("Input amount cannot have more than 2 decimal places");
+        }
+
         log.info("Creating account with initial balance: {}", roundMoney(request.getInitialBalance()));
         Account account = new Account();
         account.setName(request.getName());
@@ -48,6 +52,10 @@ public class AccountService {
         UUID fromAccountId = transferRequest.getFromAccountId();
         UUID toAccountId = transferRequest.getToAccountId();
         BigDecimal amount = transferRequest.getAmount();
+
+        if (amount.scale() > 2) {
+            throw new TransferException("Input amount cannot have more than 2 decimal places");
+        }
 
         log.info("Processing transfer of ${} from account {} to account {}", roundMoney(amount), fromAccountId, toAccountId);
 
@@ -71,7 +79,7 @@ public class AccountService {
             log.error("Deposit to account {} failed unexpectedly. Rolling back withdrawal from account {}",
                     toAccountId, fromAccountId, e);
             fromAccount.deposit(amount);
-            throw new TransferException("Failed to deposit funds into account " + toAccountId +". Transfer cancelled.");
+            throw new TransferException("Failed to deposit funds into account " + toAccountId + ". Transfer cancelled.");
         }
 
         // Create transaction record after successful balance updates
@@ -103,6 +111,9 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
         List<Transaction> transactions = transactionRepository.findTransactionsByAccountId(accountId);
+        if (transactions == null) {
+            transactions = List.of();
+        }
         log.info("Found {} transactions for account with ID: {}", transactions.size(), accountId);
         return transactions.stream()
                 .map(this::mapToTransactionDto)
@@ -113,13 +124,17 @@ public class AccountService {
         UUID accountId = depositRequest.getToAccountId();
         BigDecimal amount = depositRequest.getAmount();
 
+        if (amount.scale() > 2) {
+            throw new TransferException("Input amount cannot have more than 2 decimal places");
+        }
+
         log.info("Processing deposit of ${} into account {}", roundMoney(amount), accountId);
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
         try {
             account.deposit(amount);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new TransferException("Failed to deposit funds into account " + accountId);
         }
 
@@ -138,8 +153,12 @@ public class AccountService {
     }
 
     public TransactionDto withdrawFunds(WithdrawRequest withdrawRequest) {
-        UUID accountId = withdrawRequest.getToAccountId();
+        UUID accountId = withdrawRequest.getFromAccountId();
         BigDecimal amount = withdrawRequest.getAmount();
+
+        if (amount.scale() > 2) {
+            throw new TransferException("Input amount cannot have more than 2 decimal places");
+        }
 
         log.info("Processing withdrawal of ${} from account {}", roundMoney(amount), accountId);
         Account account = accountRepository.findById(accountId)
@@ -164,7 +183,7 @@ public class AccountService {
     }
 
     private AccountDto mapToAccountDto(Account account) {
-        return new AccountDto(account.getId(), account.getName(),account.getBalance(), account.getCreatedAt());
+        return new AccountDto(account.getId(), account.getName(), "$" + account.getBalance(), account.getCreatedAt());
     }
 
     private TransactionDto mapToTransactionDto(Transaction transaction) {
@@ -172,7 +191,7 @@ public class AccountService {
                 transaction.getId(),
                 transaction.getFromAccountId(),
                 transaction.getToAccountId(),
-                transaction.getAmount(),
+                "$" + transaction.getAmount(),
                 transaction.getType(),
                 transaction.getDescription(),
                 transaction.getTimestamp()

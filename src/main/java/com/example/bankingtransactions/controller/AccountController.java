@@ -25,6 +25,7 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.CREATED).body(account);
     }
 
+    // GET endpoint to retrieve details of a specific account
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable UUID accountId) {
         AccountDto account = accountService.getAccount(accountId);

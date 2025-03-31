@@ -13,8 +13,8 @@ import java.util.UUID;
 @Data
 public class WithdrawRequest {
 
-    @NotNull(message = "Destination account ID cannot be null")
-    private UUID toAccountId;
+    @NotNull(message = "Source account ID cannot be null")
+    private UUID fromAccountId;
 
     @NotNull(message = "Amount cannot be null")
     @Positive(message = "Amount must be positive")

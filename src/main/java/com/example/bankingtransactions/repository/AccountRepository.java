@@ -1,13 +1,12 @@
 package com.example.bankingtransactions.repository;
 
+import com.example.bankingtransactions.model.Account;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.example.bankingtransactions.model.Account;
 
 @Repository
 public class AccountRepository {
