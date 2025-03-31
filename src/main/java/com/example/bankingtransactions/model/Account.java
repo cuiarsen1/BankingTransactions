@@ -1,22 +1,22 @@
 package com.example.bankingtransactions.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Account {
+
     private UUID id;
     private String name;
     private BigDecimal balance;
     private LocalDateTime createdAt;
-
-    public Account() {
-        this.id = UUID.randomUUID();
-        this.createdAt = LocalDateTime.now();
-    }
 
     public void deposit(BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {

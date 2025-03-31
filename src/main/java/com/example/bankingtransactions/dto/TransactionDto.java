@@ -16,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TransactionDto {
     private UUID id;
+    private String message;
     private UUID fromAccountId;
     private UUID toAccountId;
     private String amount;

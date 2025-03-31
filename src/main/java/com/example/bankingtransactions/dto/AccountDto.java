@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AccountDto {
     private UUID id;
+    private String message;
     private String name;
     private String balance;
     private LocalDateTime createdAt;

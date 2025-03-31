@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,11 +34,14 @@ public class AccountService {
 
         log.info("Creating account with initial balance: {}", roundMoney(request.getInitialBalance()));
         Account account = new Account();
+        account.setId(UUID.randomUUID());
         account.setName(request.getName());
         account.setBalance(roundMoney(request.getInitialBalance()));
+        account.setCreatedAt(LocalDateTime.now());
+
         Account savedAccount = accountRepository.save(account);
         log.info("Account created successfully with ID: {}", savedAccount.getId());
-        return mapToAccountDto(savedAccount);
+        return mapToAccountDto(savedAccount, "Account created successfully");
     }
 
     public AccountDto getAccount(UUID accountId) {
@@ -45,7 +49,7 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
         log.info("Account found: {}", accountId);
-        return mapToAccountDto(account);
+        return mapToAccountDto(account, "Account found");
     }
 
     public TransactionDto transferFunds(TransferRequest transferRequest) {
@@ -84,11 +88,13 @@ public class AccountService {
 
         // Create transaction record after successful balance updates
         Transaction transaction = new Transaction();
+        transaction.setId(UUID.randomUUID());
         transaction.setFromAccountId(fromAccountId);
         transaction.setToAccountId(toAccountId);
         transaction.setAmount(roundMoney(amount));
         transaction.setType(TransactionType.TRANSFER);
         transaction.setDescription(transferRequest.getDescription());
+        transaction.setTimestamp(LocalDateTime.now());
 
         Transaction savedTransaction = transactionRepository.save(transaction);
 
@@ -100,7 +106,7 @@ public class AccountService {
                 roundMoney(toAccount.getBalance())
         );
 
-        return mapToTransactionDto(savedTransaction);
+        return mapToTransactionDto(savedTransaction, "Transfer successful");
     }
 
     public List<TransactionDto> getTransactionHistory(UUID accountId) {
@@ -114,9 +120,11 @@ public class AccountService {
         if (transactions == null) {
             transactions = List.of();
         }
+
+        int transactionsCount = transactions.size();
         log.info("Found {} transactions for account with ID: {}", transactions.size(), accountId);
         return transactions.stream()
-                .map(this::mapToTransactionDto)
+                .map(transaction -> mapToTransactionDto(transaction, "Found " + transactionsCount + " transactions"))
                 .toList();
     }
 
@@ -140,16 +148,21 @@ public class AccountService {
 
         // Create transaction record after successful balance update
         Transaction transaction = new Transaction();
+        transaction.setId(UUID.randomUUID());
         transaction.setToAccountId(accountId);
         transaction.setAmount(roundMoney(amount));
         transaction.setType(TransactionType.DEPOSIT);
+        transaction.setTimestamp(LocalDateTime.now());
 
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         log.info("Deposit successful. Transaction ID: {}. New balance for account {}: {}",
                 savedTransaction.getId(), accountId, roundMoney(account.getBalance()));
 
-        return mapToTransactionDto(savedTransaction);
+        return mapToTransactionDto(
+                savedTransaction,
+                "Deposit successful. New balance for account: " + roundMoney(account.getBalance())
+        );
     }
 
     public TransactionDto withdrawFunds(WithdrawRequest withdrawRequest) {
@@ -170,25 +183,31 @@ public class AccountService {
 
         // Create transaction record after successful balance update
         Transaction transaction = new Transaction();
+        transaction.setId(UUID.randomUUID());
         transaction.setFromAccountId(accountId);
         transaction.setAmount(roundMoney(amount));
         transaction.setType(TransactionType.WITHDRAWAL);
+        transaction.setTimestamp(LocalDateTime.now());
 
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         log.info("Withdrawal successful. Transaction ID: {}. New balance for account {}: {}",
                 savedTransaction.getId(), accountId, roundMoney(account.getBalance()));
 
-        return mapToTransactionDto(savedTransaction);
+        return mapToTransactionDto(
+                savedTransaction,
+                "Withdrawal successful. New balance for account: " + roundMoney(account.getBalance())
+        );
     }
 
-    private AccountDto mapToAccountDto(Account account) {
-        return new AccountDto(account.getId(), account.getName(), "$" + account.getBalance(), account.getCreatedAt());
+    private AccountDto mapToAccountDto(Account account, String message) {
+        return new AccountDto(account.getId(), message, account.getName(), "$" + account.getBalance(), account.getCreatedAt());
     }
 
-    private TransactionDto mapToTransactionDto(Transaction transaction) {
+    private TransactionDto mapToTransactionDto(Transaction transaction, String message) {
         return new TransactionDto(
                 transaction.getId(),
+                message,
                 transaction.getFromAccountId(),
                 transaction.getToAccountId(),
                 "$" + transaction.getAmount(),
