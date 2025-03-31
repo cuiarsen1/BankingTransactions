@@ -2,7 +2,11 @@
 
 ## How to Build and Run
 
-This application runs on Java 17 and Spring Boot 3.4.4. Ensure you have Maven installed.
+**This application runs on Java 17 and Spring Boot 3.4.4.**
+
+**NOTE:** Ensure you have Maven installed on your system. 
+
+* If on Windows, add the Maven bin directory to your PATH environment variable, and add a new environment variable called MAVEN_HOME to your system variables with the value being the path to your root maven directory.
 
 ---
 
@@ -26,9 +30,11 @@ This application runs on Java 17 and Spring Boot 3.4.4. Ensure you have Maven in
    ```
 4. The application will start on port 8080. Logs will be printed in the same console tab.
 
+5. If using curl commands, please run the example commands below in a **Bash** tab.
+
 ## API Endpoints
 
-The base URL for the API is `http://localhost:8080`. They can be called with curl requests in a new console tab or
+The base URL for the API is `http://localhost:8080`. They can be called with curl requests in a Bash tab or
 through an API tool such as Postman.
 
 **NOTE: Remember to replace the fields in the curl examples with your own relavant fields (UUID, etc.)**
