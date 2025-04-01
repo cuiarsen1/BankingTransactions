@@ -32,6 +32,12 @@
 
 5. If using curl commands, please run the example commands below in a **Bash** tab.
 
+## Extra Notes
+
+* Logs are printed in the console where the application is run. Open a new console tab to run curl commands.
+* Spring Data JPA or Hibernate can be integrated if there is a database connected, but if data is stored just in memory without a database, it does not serve a purpose.
+* Errors are handled with the GlobalExceptionHandler defined for custom exceptions. All error flows will return detailed error responses to the user.
+
 ## API Endpoints
 
 The base URL for the API is `http://localhost:8080`. They can be called with curl requests in a Bash tab or
@@ -220,9 +226,3 @@ The list of commands is as follows:
   ```
   curl -X POST http://localhost:8080/api/accounts/withdraw -H "Content-Type: application/json" -d '{ "fromAccountId": "fb356bec-4df9-4c1f-b046-b4aeaf4e65b7", "amount": 300.00 }'
   ```
-
-## Extra Notes
-
-* Logs are printed in the console where the application is run. Open a new console tab to run curl commands.
-* Errors are handled with the GlobalExceptionHandler defined for custom exceptions. These exceptions return appropriate
-  error responses and error codes for different flows.
